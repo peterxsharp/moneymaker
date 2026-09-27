@@ -1,0 +1,153 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/passive_income_hub/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model BudgetAllocation {
+  id        String   @id @default(cuid())
+  stream    String   @unique
+  amount    Float    @default(0)
+  label     String
+  color     String   @default("#10B981")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IncomeEntry {
+  id        String   @id @default(cuid())
+  stream    String
+  month     Int
+  year      Int
+  projected Float    @default(0)
+  actual    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([stream, month, year])
+}
+
+model ContentCalendarItem {
+  id          String   @id @default(cuid())
+  day         Int
+  date        DateTime
+  platform    String
+  niche       String
+  title       String
+  description String   @default("")
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model StreamSettings {
+  id               String   @id @default(cuid())
+  stream           String   @unique
+  automationScore  Int      @default(0)
+  hoursPerWeek     Float    @default(0)
+  isActive         Boolean  @default(true)
+  optimistic       Float    @default(0)
+  realistic        Float    @default(0)
+  pessimistic      Float    @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("user")
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VideoProject {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  order          Int       @default(0)
+  topic          String
+  angle          String    @default("")
+  factSheet      String    @db.Text
+  sources        String[]  @default([])
+  status         String    @default("planned")
+  script         Json?
+  youtubeTitle   String    @default("")
+  description    String    @default("") @db.Text
+  tags           String[]  @default([])
+  thumbnailPath  String?
+  sceneImages    Json?
+  voiceover      Json?
+  renderRequestId String?
+  videoUrl       String?
+  youtubeVideoId String?
+  scheduledFor   DateTime?
+  publishedAt    DateTime?
+  lastError      String?   @db.Text
+  distribution   Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model PlatformProgress {
+  platform   String   @id
+  followers  Int      @default(0)
+  views      Int      @default(0)
+  watchHours Float    @default(0)
+  status     String   @default("not_started")
+  notes      String   @default("") @db.Text
+  updatedAt  DateTime @updatedAt
+}
+
+model YouTubeConnection {
+  id           String   @id @default("default")
+  refreshToken String   @db.Text
+  channelId    String   @default("")
+  channelTitle String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
