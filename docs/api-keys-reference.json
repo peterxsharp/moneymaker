@@ -1,0 +1,93 @@
+{
+  "session": "2026-09-27",
+  "project": "passive-income-hub / moneymaker",
+  "note": "This file lists KEY NAMES and SERVICE info only. NO raw secret values are ever stored here. Real values live in the untracked .env file. See .env.example for the full template.",
+  "api_keys": [
+    {
+      "service": "AbacusAI",
+      "env_var": "ABACUSAI_API_KEY",
+      "purpose": "LLM API for AI-generated content (video scripts, content briefs, calendars, niche sites). Uses gpt-5.4 via https://apps.abacus.ai/v1/chat/completions",
+      "docs": "https://abacus.ai/app/profile/apikey",
+      "configured": true
+    },
+    {
+      "service": "OpenAI",
+      "env_var": "OPENAI_API_KEY",
+      "purpose": "Text-to-Speech voiceover generation via tts-1 model",
+      "docs": "https://platform.openai.com/api-keys",
+      "configured": true
+    },
+    {
+      "service": "Google OAuth (YouTube Data API v3)",
+      "env_var": "YOUTUBE_CLIENT_ID / YOUTUBE_CLIENT_SECRET",
+      "purpose": "YouTube OAuth2 authorization - upload videos, manage thumbnails, access channel info, schedule publishes",
+      "scopes": [
+        "https://www.googleapis.com/auth/youtube.upload",
+        "https://www.googleapis.com/auth/youtube"
+      ],
+      "docs": "https://console.cloud.google.com/",
+      "configured": true
+    },
+    {
+      "service": "Vimeo API",
+      "env_var": "VIMEO_ACCESS_TOKEN",
+      "purpose": "Upload videos to Vimeo (pull-upload approach) for cross-platform distribution and Vimeo OnDemand/OTT",
+      "docs": "https://developer.vimeo.com/apps",
+      "configured": true
+    },
+    {
+      "service": "Dailymotion API",
+      "env_var": "DAILYMOTION_API_KEY / DAILYMOTION_API_SECRET / DAILYMOTION_USERNAME / DAILYMOTION_PASSWORD",
+      "purpose": "Upload videos to Dailymotion via password-grant OAuth (manage_videos scope) for cross-platform distribution",
+      "docs": "https://developer.dailymotion.com/",
+      "configured": true
+    },
+    {
+      "service": "AWS S3",
+      "env_var": "AWS_PROFILE / AWS_REGION / AWS_BUCKET_NAME / AWS_FOLDER_PREFIX",
+      "purpose": "Cloud storage for rendered video files (MP4), thumbnails, scene images, and voiceover audio (WAV). Public URLs feed the FFmpeg render + distribution uploads.",
+      "docs": "https://console.aws.amazon.com/",
+      "configured": true
+    },
+    {
+      "service": "PostgreSQL",
+      "env_var": "DATABASE_URL",
+      "purpose": "Primary database (Prisma ORM) - all budget, income, content calendar, stream settings, video projects, platform monetization progress, users/sessions, and YouTube connection tokens",
+      "configured": true
+    },
+    {
+      "service": "NextAuth.js / Auth.js v5",
+      "env_var": "NEXTAUTH_SECRET / AUTH_SECRET / NEXTAUTH_URL / ALLOWED_EMAILS",
+      "purpose": "Session authentication and JWT signing for the web app (credentials provider, email allowlist)",
+      "configured": true
+    }
+  ],
+  "api_calls_programmed": [
+    "GET /api/videos - list all launch videos + integration/connection status",
+    "PATCH /api/videos/:id - update video metadata (title, description, tags, schedule, scene narrations)",
+    "POST /api/videos/:id/script - stream-generate the video script with AbacusAI (SSE)",
+    "POST /api/videos/:id/visuals - generate one thumbnail or scene image via AI",
+    "POST /api/videos/:id/voiceover - synthesize one scene's narration (OpenAI tts-1)",
+    "POST /api/videos/:id/render - start FFmpeg render (stills timed to narration); GET polls render status",
+    "POST /api/videos/:id/publish - upload/publish the video to YouTube",
+    "POST /api/videos/:id/distribute - cross-post to Vimeo/Dailymotion or record a manual Rumble link",
+    "GET /api/monetization - get monetization progress for all platforms",
+    "PATCH /api/monetization - update monetization metrics/status for a platform",
+    "GET /api/youtube/connect - initiate YouTube OAuth flow; DELETE disconnects",
+    "GET /api/youtube/callback - handle YouTube OAuth callback + store refresh token",
+    "GET/PUT /api/budget - read/save the $500 seed budget allocation",
+    "GET/PUT /api/income - read/save income entries (projected vs actual)",
+    "GET/POST/PATCH /api/content-calendar - manage the content calendar",
+    "GET/PUT /api/stream-settings - read/save per-stream settings",
+    "POST /api/simulator - run Monte Carlo income simulation",
+    "GET /api/crypto/prices - fetch live crypto market data (arbitrage scanner)",
+    "POST /api/generate/script - generate short-form video script (streamed)",
+    "POST /api/generate/brief - generate SEO content brief (streamed)",
+    "POST /api/generate/calendar - generate a 30-day content calendar (JSON)",
+    "POST /api/generate/designs - generate print-on-demand design ideas (streamed)",
+    "POST /api/generate/niche-site - generate a niche affiliate site structure (streamed)",
+    "POST /api/signup - register a new user (bcrypt, allowlist enforced)",
+    "POST /api/auth/login - validate credentials before Auth.js sign-in",
+    "GET/POST /api/auth/[...nextauth] - Auth.js session/callback endpoints"
+  ]
+}
